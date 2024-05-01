@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<!--From https://codepen.io/frytyler/pen/EGdtg-->
+
+<head>
+  <meta charset="UTF-8">
+  <title>ML API</title>
+  <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Arimo' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Hind:300' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
+  <meta name="description" content="This page is about showcasing work created for a MSc project">
+  <link rel="icon" type="image/ico" href="static/favicon.ico" /> <!-- Addition of favicon -->
+
+  <!-- Tooltips -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+
+  <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"> -->
+
+</head>
+
+<body>
+  <div class="d-flex flex-column mt-5 justify-content-center align-items-center intro_area">
+    <h1 class="display-3">Detection of Hate Speech</h1>
+    <img class="m-3" height="100px" src="{{ url_for('static', filename='images/nsut.png') }}" alt="hate speech" />
+    <h1 class="display-5">B. Tech Project</h1>
+    <div class="d-flex w-75 justify-content-between">
+      <div class="lead fs-6">
+        <p class="h6">Created by :</p>
+        <p class="p-0 m-0"> <em> Apoorva (2020UCO1558)</em></p>
+        <p class="p-0 m-0"> <em>Harsh (2020UCO1536) </em></p>
+        <p class="p-0 m-0"> <em>Virender Singh Nayal</em> (2020UCO1545)</p>
+      </div>
+      <div>
+        <p class="h6">Under the supervision of</p>
+        <p> <em> Dr. Anand Gupta </em></p>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="d-flex w-100 flex-column justify-content-center mt-5 align-items-center main_area">
+    <div class="list-inline">
+      <h3 class="display-6"> Enter the speech or text here : <i class="fa fa-info-circle infopop-icon"
+          data-toggle="tooltip" data-placement="right"
+          title="The model categorizes text into 3 classes, which are 'Hate Speech', 'Offensive Language' and 'Neither'. Classifier (XGBoost) decisions are explained through the LIME algorithm."></i>
+      </h3>
+    </div>
+
+    <div class="form-floating w-75">
+      <form class="d-flex flex-column justify-content-center align-items-center main_area"
+        action="{{ url_for('predict')}}" method="post">
+        <textarea class="form-control" placeholder="Write or paste here" id="floatingTextarea2"
+          name="hate_speech_text_field" style="height: 200px" required="required"></textarea>
+
+        <button type="submit" class="btn m-3 btn-info btn-block btn-large w-50">Predict</button>
+      </form>
+    </div>
+
+
+    <div class="w-75 prediction_text">
+      <p class="display-6"> {{ pre_predict_text }}
+        {{ predict_text }}
+        <strong> {{ prediction_text }} </strong>
+      </p>
+    </div> 
+
+    <div class="m-3">
+      {% if 'hate speech' in prediction_text %}
+      <img class="img-fluid" src="{{ url_for('static', filename='images/hate_speech.png') }}" alt="hate speech" />
+
+      {% elif 'offensive language' in prediction_text %}
+      <img class="img-fluid" src="{{ url_for('static', filename='images/offens_lang.png') }}"
+        alt="offensive language" />
+
+      {% elif 'neither' in prediction_text %}
+      <img class="img-fluid" src="{{ url_for('static', filename='images/neither.png') }}" alt="neither" />
+
+      {% endif %}
+    </div>
+
+    {% if expla_text %}
+    <div class="list-inline">
+      <h3 class="w3-text-teal"> {{ expla_text }} <i class="fa fa-info-circle infopop-icon" data-toggle="tooltip"
+          data-placement="right"
+          title="The original text is cleaned, corrected and filtered from stop words, thus less words appear in the explanation. The highlighted words represent their importance in the prediction of a specific label. Explanation is generated using the LIME algorithm - used for Black-Box classifier interpretation."></i>
+      </h3>
+    </div>
+    {{ explain_top_2_preds }}
+    {% endif %}
+
+  </div>
+
+
+  <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+</body>
+
+</html>
